@@ -1,6 +1,5 @@
 package com.url.shortner.model;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
