@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.url.shortner.exception.URLValidationException;
@@ -34,7 +35,6 @@ public class URLServiceImpl implements URLService {
 		
 		List<String> errors = new ArrayList<String>();
 		
-		
 		globalUtilities.validateUserInput(urlEntity, errors);
 		
 		if(errors.size() != 0) {
@@ -42,19 +42,32 @@ public class URLServiceImpl implements URLService {
 			throw new URLValidationException("Validation Error", errors);
 		}
 		
-		String randomString = globalUtilities.getRandomCode();
+		String randomString = globalUtilities.getRandomCodeNew();
+		while(true) {
+			if(isUniqueCode(randomString))
+				break;
+			else
+				randomString = globalUtilities.getRandomCodeNew();
+		}
 		logger.info("Generated Random String: " + randomString);
 		
 		UrlShortenedEntity urlShortenedEntity = new UrlShortenedEntity();
 		urlShortenedEntity.setShortenedURL(randomString);
-		
 		urlShortenedEntity.setUrlEntity(urlEntity);
 		
 		logger.info("Saving URLShortenedEntity: " + urlShortenedEntity.toString());
-		
 		urlShortenedRepository.saveAndFlush(urlShortenedEntity);
 		
 		return randomString;
+	}
+	
+	private Boolean isUniqueCode(String code) {
+		UrlShortenedEntity temp = urlShortenedRepository.findByShortenedURL(code);
+		if(null != temp) {
+			System.out.println("if condition");
+			return false;
+		}
+		return true;
 	}
 
 }

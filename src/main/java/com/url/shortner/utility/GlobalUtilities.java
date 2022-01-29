@@ -2,9 +2,13 @@ package com.url.shortner.utility;
 
 import java.net.URL;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,10 +28,9 @@ public class GlobalUtilities {
 	@Value("${app.properties.shorturl.characters}")
 	public String shortUrlCharacters;
 	
+	@Deprecated
 	public String getRandomCode() {
 		String randomCode = "";
-		
-		String finalRandomCode = "";
 		
 		Random random = new Random();
 		
@@ -38,14 +41,25 @@ public class GlobalUtilities {
 	        randomCode += Character.toString(randomChar);
 		}
 		
-		//Randomize the generated string from previous iteration
-		for(int i = 0 ; i < randomCode.length(); i++) {
-			int randomInt = random.nextInt(randomCode.length());
-			char randomChar = randomCode.charAt(randomInt);
-			finalRandomCode += Character.toString(randomChar);
-		}
+		randomCode = randomizeString(randomCode);
 		
-		return finalRandomCode;
+		return randomCode;
+	}
+	
+	public String getRandomCodeNew() {
+		int leftLimit = 48; // numeral '0'
+	    int rightLimit = 122; // letter 'z'
+	    Random random = new Random();
+
+	    String generatedString = random.ints(leftLimit, rightLimit + 1)
+	      .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+	      .limit(shortUrlLength)
+	      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+	      .toString();
+	    
+	    generatedString = new String(randomizeString(generatedString));
+	    
+	    return generatedString;
 	}
 	
 	public void validateUserInput(UrlEntity urlEntity, List<String> errors) {
@@ -76,13 +90,20 @@ public class GlobalUtilities {
 		urlEntity.setOrginalUrl(urlEntity.getOrginalUrl().trim());
 	}
 	
-	protected Boolean isValidURL(String url) {
+	private Boolean isValidURL(String url) {
 		try {
             new URL(url).toURI();
             return true;
         } catch (Exception e) {
             return false;
         }
+	}
+	
+	private String randomizeString(String string) {
+		List<String> letters = Arrays.asList(string.split(""));
+		Collections.shuffle(letters);
+		Collections.shuffle(letters);
+		return letters.stream().collect(Collectors.joining());
 	}
 
 }
