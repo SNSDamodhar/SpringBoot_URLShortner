@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.url.shortner.exception.URLRedirectionException;
 import com.url.shortner.model.UrlShortenedEntity;
 import com.url.shortner.repository.UrlShortenedRepository;
+import com.url.shortner.utility.DateUtilities;
 import com.url.shortner.utility.URLShortenConstants;
 
 @Service
@@ -19,6 +20,9 @@ public class URLShortenServiceImpl implements URLShortenService {
 	
 	@Autowired
 	private UrlShortenedRepository urlShortenedRepository;
+	
+	@Autowired
+	private DateUtilities dateUtilities;
 
 	@Override
 	public String getOrginalUrl(String shortID) throws URLRedirectionException {
@@ -28,7 +32,7 @@ public class URLShortenServiceImpl implements URLShortenService {
 			throw new URLRedirectionException(URLShortenConstants.INVALID_SHORT_URL);
 		}
 		
-		if(null != urlShorten.getUrlEntity().getDateOfValidity() && !(urlShorten.getUrlEntity().getDateOfValidity().compareTo(new Date()) >= 0)) {
+		if(null != urlShorten.getUrlEntity().getDateOfValidity() && !(urlShorten.getUrlEntity().getDateOfValidity().compareTo(dateUtilities.getUTCTimeNow()) >= 0)) {
 			logger.error("Redirection Exception: " + URLShortenConstants.SHORT_URL_EXPIRED);
 			throw new URLRedirectionException(URLShortenConstants.SHORT_URL_EXPIRED);
 		}
@@ -40,7 +44,7 @@ public class URLShortenServiceImpl implements URLShortenService {
 			Date newDate = cal.getTime();
 			logger.info("Validity date for " + shortID + " is " + newDate.toString());
 			
-			if(!(newDate.compareTo(new Date()) >= 0)) {
+			if(!(newDate.compareTo(dateUtilities.getUTCTimeNow()) >= 0)) {
 				logger.error("Redirection Exception: " + URLShortenConstants.SHORT_URL_EXPIRED);
 				throw new URLRedirectionException(URLShortenConstants.SHORT_URL_EXPIRED);
 			}

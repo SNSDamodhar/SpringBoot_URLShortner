@@ -1,22 +1,19 @@
 package com.url.shortner.utility;
 
 import java.net.URL;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.url.shortner.model.UrlEntity;
-import com.url.shortner.service.URLServiceImpl;
 
 @Component
 public class GlobalUtilities {
@@ -27,6 +24,9 @@ public class GlobalUtilities {
 	
 	@Value("${app.properties.shorturl.characters}")
 	public String shortUrlCharacters;
+	
+	@Autowired
+	private DateUtilities dateUtilities;
 	
 	@Deprecated
 	public String getRandomCode() {
@@ -79,7 +79,7 @@ public class GlobalUtilities {
 		if(urlEntity.getSecondsOfValdity() <= 0 && null == urlEntity.getDateOfValidity()) {
 			logger.error("Validation Error: " + URLConstants.INVALID_VALIDITY);
 			errors.add(URLConstants.INVALID_VALIDITY);
-		} else if(null != urlEntity.getDateOfValidity() && new Date().compareTo(urlEntity.getDateOfValidity()) >= 0) {
+		} else if(null != urlEntity.getDateOfValidity() && dateUtilities.getUTCTimeNow().compareTo(urlEntity.getDateOfValidity()) >= 0) {
 			logger.error("Validation Error: " + URLConstants.INVALID_DATE_VALIDITY);
 			errors.add(URLConstants.INVALID_DATE_VALIDITY);
 		}

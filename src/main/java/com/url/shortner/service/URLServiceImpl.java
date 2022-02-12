@@ -7,13 +7,14 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.url.shortner.VO.URLEntityVO;
 import com.url.shortner.exception.URLValidationException;
 import com.url.shortner.model.UrlEntity;
 import com.url.shortner.model.UrlShortenedEntity;
 import com.url.shortner.repository.UrlShortenedRepository;
+import com.url.shortner.utility.BuildURLEntityFromVO;
 import com.url.shortner.utility.GlobalUtilities;
 
 @Service
@@ -26,14 +27,21 @@ public class URLServiceImpl implements URLService {
 	
 	@Autowired
 	private GlobalUtilities globalUtilities;
+	
+	@Autowired
+	private BuildURLEntityFromVO buildURLEntityFromVO;
 
 	@Override
 	@Transactional
-	public String createShortenLink(UrlEntity urlEntity) throws URLValidationException {
-		
-		globalUtilities.sanitizeRequest(urlEntity);
-		
+	public String createShortenLink(URLEntityVO urlEntityVO) throws URLValidationException {
 		List<String> errors = new ArrayList<String>();
+		
+		//Convert VO object to Entity object
+		UrlEntity urlEntity = buildURLEntityFromVO.convert(urlEntityVO, errors); 
+		if(errors.size() != 0) {
+			logger.error("Throwing Validation Error");
+			throw new URLValidationException("Validation Error", errors);
+		}
 		
 		globalUtilities.validateUserInput(urlEntity, errors);
 		

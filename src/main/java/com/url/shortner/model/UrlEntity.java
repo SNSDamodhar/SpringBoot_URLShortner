@@ -1,5 +1,6 @@
 package com.url.shortner.model;
 
+
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -13,10 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotBlank;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -36,17 +34,17 @@ public class UrlEntity extends Parent {
 	private Long id;
 	
 	@Column(name = "orginal_url", nullable = false)
-	@NotBlank(message = "URL should not be empty")
 	private String orginalUrl;
 	
 	@Column(name = "valid_seconds")
 	private int secondsOfValdity;
 	
 	@Column(name = "valid_date")
-	@Temporal(TemporalType.DATE)
-	@JsonFormat(shape = Shape.STRING ,pattern = "dd-MM-yyyy")
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateOfValidity;
 	
+	@Column(name = "time_zone")
+	private String timeZone;
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "urlEntity")
 	@JsonIgnore

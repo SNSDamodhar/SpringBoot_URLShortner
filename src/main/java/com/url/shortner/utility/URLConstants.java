@@ -8,4 +8,6 @@ public class URLConstants {
 	public static final String INVALID_VALIDITY = "Either Seconds should be greater than 0 nor Date should be mentioned";
 	
 	public static final String INVALID_DATE_VALIDITY = "Validity Date should be future date";
+	
+	public static final String DEFAULT_TIMEZONE_VALIDITY = "UTC";
 }

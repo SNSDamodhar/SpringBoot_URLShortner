@@ -16,6 +16,10 @@ public class URLValidationException extends Exception {
 		this.errors.addAll(errors);
 	}
 
+	public URLValidationException(String string) {
+		super(string);
+	}
+
 	public List<String> getErrors() {
 		return errors;
 	}
