@@ -1,6 +1,6 @@
 package com.url.shortner.exception;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		Map<String, Object> body = new LinkedHashMap<String, Object>();
-		body.put("timestamp", LocalDate.now());
+		body.put("timestamp", Instant.now());
 		body.put("status", status.value());
 		
 		List<String> errors = ex.getBindingResult().getFieldErrors().stream().map(error -> error.getDefaultMessage()).collect(Collectors.toList());
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(value = {URLValidationException.class})
 	public ResponseEntity<Object> invalidUserInput(URLValidationException ex, WebRequest request) {
 		Map<String, Object> body = new LinkedHashMap<String, Object>();
-		body.put("timestamp", LocalDate.now());
+		body.put("timestamp", Instant.now());
 		body.put("status", HttpStatus.BAD_REQUEST);
 		body.put("message", ex.getMessage());
 		body.put("errors", ex.getErrors());

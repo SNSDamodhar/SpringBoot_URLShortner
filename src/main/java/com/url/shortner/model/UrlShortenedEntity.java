@@ -11,6 +11,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.url.shortner.utility.URLShortenConstants;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,17 +26,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "url_short")
+@JsonInclude(value = Include.NON_NULL)
 public class UrlShortenedEntity extends Parent {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ush_id")
+	@JsonIgnore
 	private Long id;
+	
+	@Column(name = "shortened_url", nullable = false, updatable = false, unique = true)
+	@JsonProperty(URLShortenConstants.PROPERTY_SHORT_URL)
+	private String shortenedURL;
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "url_id", referencedColumnName = "url_id")
 	private UrlEntity urlEntity;
-	
-	@Column(name = "shortened_url", nullable = false, updatable = false, unique = true)
-	private String shortenedURL;
 }

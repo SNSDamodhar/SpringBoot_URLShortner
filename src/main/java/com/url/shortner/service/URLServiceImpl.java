@@ -33,7 +33,7 @@ public class URLServiceImpl implements URLService {
 
 	@Override
 	@Transactional
-	public String createShortenLink(URLEntityVO urlEntityVO) throws URLValidationException {
+	public UrlShortenedEntity createShortenLink(URLEntityVO urlEntityVO) throws URLValidationException {
 		List<String> errors = new ArrayList<String>();
 		
 		//Convert VO object to Entity object
@@ -64,9 +64,9 @@ public class URLServiceImpl implements URLService {
 		urlShortenedEntity.setUrlEntity(urlEntity);
 		
 		logger.info("Saving URLShortenedEntity: " + urlShortenedEntity.toString());
-		urlShortenedRepository.saveAndFlush(urlShortenedEntity);
+		urlShortenedEntity = urlShortenedRepository.saveAndFlush(urlShortenedEntity);
 		
-		return randomString;
+		return urlShortenedEntity;
 	}
 	
 	private Boolean isUniqueCode(String code) {
