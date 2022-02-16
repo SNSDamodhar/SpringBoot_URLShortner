@@ -4,6 +4,7 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.url.shortner.utility.URLConstants;
+import com.url.shortner.utility.URLShortenConstants;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,9 @@ public class URLEntityVO {
 	@NotBlank(message = "URL should not be empty")
 	@JsonProperty(URLConstants.PROPERTY_URL)
 	private String orginalUrl;
+	
+	@JsonProperty(URLShortenConstants.PROPERTY_SHORT_URL)
+	private String requestedURL;
 	
 	@JsonProperty(URLConstants.PROPERTY_SECONDS)
 	private int secondsOfValdity;

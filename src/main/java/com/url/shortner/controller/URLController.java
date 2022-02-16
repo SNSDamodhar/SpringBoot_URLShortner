@@ -16,6 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.url.shortner.VO.URLEntityVO;
 import com.url.shortner.exception.URLValidationException;
+import com.url.shortner.model.UrlEntity;
 import com.url.shortner.model.UrlShortenedEntity;
 import com.url.shortner.service.URLService;
 
@@ -29,7 +30,7 @@ public class URLController {
 	private URLService urlService;
 	
 	@PostMapping("/urls/shorten")
-	public ResponseEntity<Object> createShortLink(@Valid @RequestBody URLEntityVO urlEntityVO, HttpServletRequest request) throws URLValidationException {
+	public ResponseEntity<Object> createShortLink(@Valid @RequestBody URLEntityVO urlEntityVO, HttpServletRequest request) throws Exception {
 		logger.info("Controller Class :: Request Payload: " + urlEntityVO.toString());
 		
 		//To get the base url
@@ -39,12 +40,10 @@ public class URLController {
 	            .toUriString();
 		
 		logger.info("Controller Class :: calling createShortenLink service");
-		UrlShortenedEntity shorten = urlService.createShortenLink(urlEntityVO);
-		shorten.setShortenedURL(baseUrl + "/" + shorten.getShortenedURL());
+		UrlEntity entity = urlService.createShortenLink(urlEntityVO);
+		entity.getUrlShortenedEntity().setShortenedURL(baseUrl + "/" + entity.getUrlShortenedEntity().getShortenedURL());
 		
-//		logger.info("Shorten link returned by service :" + output.get("short_url"));
-		
-		return new ResponseEntity<>(shorten, HttpStatus.CREATED);
+		return new ResponseEntity<>(entity.getUrlShortenedEntity(), HttpStatus.CREATED);
 	}
 
 }
