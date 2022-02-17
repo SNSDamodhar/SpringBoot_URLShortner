@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +21,8 @@ public class BuildURLEntityFromVO {
 	
 	@Autowired
 	private DateUtilities dateConversionUtilities;
+	
+	public final static Predicate<String> isRequestedShortUrlValid = (short_url) -> Pattern.matches("^[a-zA-Z0-9]*$", short_url); 
 
 	public UrlEntity convert(URLEntityVO urlEntityVO, List<String> errors) {
 		UrlEntity urlEntity = new UrlEntity();
@@ -27,8 +31,8 @@ public class BuildURLEntityFromVO {
 		
 		urlEntity.setOrginalUrl(urlEntityVO.getOrginalUrl().trim());
 		
-		if(urlEntityVO.getRequestedURL() != null && urlEntityVO.getRequestedURL().trim().length() >= URLConstants.CUSTOM_URL_MIN_LENGTH) {
-			urlEntity.getUrlShortenedEntity().setShortenedURL(urlEntityVO.getRequestedURL());
+		if(urlEntityVO.getRequestedURL() != null && urlEntityVO.getRequestedURL().trim().length() >= URLConstants.CUSTOM_URL_MIN_LENGTH && isRequestedShortUrlValid.test(urlEntityVO.getRequestedURL().trim())) {
+			urlEntity.getUrlShortenedEntity().setShortenedURL(urlEntityVO.getRequestedURL().trim());
 		} else if(urlEntityVO.getRequestedURL() != null) {
 			errors.add(URLConstants.INVALID_CUSTOM_SHORT_URL);
 		}
