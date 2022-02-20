@@ -15,11 +15,12 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.url.shortner.utility.URLConstants;
+import com.url.shortner.utility.ApplicationConstants;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,21 +41,22 @@ public class UrlEntity extends Parent {
 	private Long id;
 	
 	@Column(name = "orginal_url", nullable = false)
-	@JsonProperty(URLConstants.PROPERTY_URL)
+	@JsonProperty(ApplicationConstants.PropertyNames.PROPERTY_URL)
 	private String orginalUrl;
 	
 	@Column(name = "valid_seconds")
-	@JsonProperty(URLConstants.PROPERTY_SECONDS)
-	private int secondsOfValdity;
+	@JsonProperty(ApplicationConstants.PropertyNames.PROPERTY_EXPIRY_SECONDS)
+	private int shortURLExpiryseconds;
 	
 	@Column(name = "valid_date")
 	@Temporal(TemporalType.TIMESTAMP)
-	@JsonProperty(URLConstants.PROPERTY_DATE)
-	private Date dateOfValidity;
+	@JsonFormat(pattern = "dd/MM/yyyy hh:mm:ss a")
+	@JsonProperty(ApplicationConstants.PropertyNames.PROPERTY_EXPIRY_DATE)
+	private Date shortURLExpiryDate;
 	
 	@Column(name = "time_zone")
-	@JsonProperty(URLConstants.PROPERTY_TIME_ZONE)
-	private String timeZone;
+	@JsonProperty(ApplicationConstants.PropertyNames.PROPERTY_TIME_ZONE)
+	private String timeZone = ApplicationConstants.DEFAULT_TIMEZONE_VALUE;
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "urlEntity")
 	@JsonIgnore

@@ -3,6 +3,7 @@ package com.url.shortner.service;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.url.shortner.utility.ApplicationConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import com.url.shortner.exception.URLRedirectionException;
 import com.url.shortner.model.UrlShortenedEntity;
 import com.url.shortner.repository.UrlShortenedRepository;
 import com.url.shortner.utility.DateUtilities;
-import com.url.shortner.utility.URLShortenConstants;
 
 @Service
 public class URLShortenServiceImpl implements URLShortenService {
@@ -28,25 +28,25 @@ public class URLShortenServiceImpl implements URLShortenService {
 	public String getOrginalUrl(String shortID) throws URLRedirectionException {
 		UrlShortenedEntity urlShorten = urlShortenedRepository.findByShortenedURL(shortID.trim());
 		if(null == urlShorten) {
-			logger.error("Redirection Exception: " + URLShortenConstants.INVALID_SHORT_URL);
-			throw new URLRedirectionException(URLShortenConstants.INVALID_SHORT_URL);
+			logger.error("Redirection Exception: " + ApplicationConstants.URLShortenConstants.SHORT_URL_NOT_FOUND);
+			throw new URLRedirectionException(ApplicationConstants.URLShortenConstants.SHORT_URL_NOT_FOUND);
 		}
 		
-		if(null != urlShorten.getUrlEntity().getDateOfValidity() && !(urlShorten.getUrlEntity().getDateOfValidity().compareTo(dateUtilities.getUTCTimeNow()) >= 0)) {
-			logger.error("Redirection Exception: " + URLShortenConstants.SHORT_URL_EXPIRED);
-			throw new URLRedirectionException(URLShortenConstants.SHORT_URL_EXPIRED);
+		if(null != urlShorten.getUrlEntity().getShortURLExpiryDate() && !(urlShorten.getUrlEntity().getShortURLExpiryDate().compareTo(dateUtilities.getUTCTimeNow()) >= 0)) {
+			logger.error("Redirection Exception: " + ApplicationConstants.URLShortenConstants.SHORT_URL_EXPIRED);
+			throw new URLRedirectionException(ApplicationConstants.URLShortenConstants.SHORT_URL_EXPIRED);
 		}
 		
-		if(urlShorten.getUrlEntity().getSecondsOfValdity() > 0) {
+		if(urlShorten.getUrlEntity().getShortURLExpiryseconds() > 0) {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(urlShorten.getUrlEntity().getCreatedDate());
-			cal.add(Calendar.SECOND, urlShorten.getUrlEntity().getSecondsOfValdity());
+			cal.add(Calendar.SECOND, urlShorten.getUrlEntity().getShortURLExpiryseconds());
 			Date newDate = cal.getTime();
 			logger.info("Validity date for " + shortID + " is " + newDate.toString());
 			
 			if(!(newDate.compareTo(dateUtilities.getUTCTimeNow()) >= 0)) {
-				logger.error("Redirection Exception: " + URLShortenConstants.SHORT_URL_EXPIRED);
-				throw new URLRedirectionException(URLShortenConstants.SHORT_URL_EXPIRED);
+				logger.error("Redirection Exception: " + ApplicationConstants.URLShortenConstants.SHORT_URL_EXPIRED);
+				throw new URLRedirectionException(ApplicationConstants.URLShortenConstants.SHORT_URL_EXPIRED);
 			}
 		}
 		

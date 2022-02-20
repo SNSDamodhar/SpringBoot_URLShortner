@@ -5,10 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +20,7 @@ public class DateUtilities {
 	
 	public Date convertDateToUTCDate(Date date, String timeZone) throws URLValidationException {
 		
-		if(timeZone.equalsIgnoreCase(URLConstants.DEFAULT_TIMEZONE_VALIDITY)) {
+		if(timeZone.equalsIgnoreCase(ApplicationConstants.DEFAULT_TIMEZONE_VALUE)) {
 			ZoneId fromTimeZoneId = ZoneId.of("UTC");
 			ZonedDateTime fromZonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).withZoneSameLocal(fromTimeZoneId);
 			fromZonedDateTime = fromZonedDateTime.plusHours(23).plusMinutes(59).plusSeconds(59);
@@ -51,6 +48,12 @@ public class DateUtilities {
 	public Date getUTCTimeNow() {
 		Instant i = Instant.now();
 		return Date.from(i);
+	}
+
+	public Date convertStringToDateObject(String date) throws ParseException {
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		Date parsedDate = formatter.parse(date);
+		return parsedDate;
 	}
 
 }

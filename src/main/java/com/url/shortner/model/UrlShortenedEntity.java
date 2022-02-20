@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.url.shortner.utility.URLShortenConstants;
+import com.url.shortner.utility.ApplicationConstants;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,7 +36,7 @@ public class UrlShortenedEntity extends Parent {
 	private Long id;
 	
 	@Column(name = "shortened_url", nullable = false, updatable = false, unique = true)
-	@JsonProperty(URLShortenConstants.PROPERTY_SHORT_URL)
+	@JsonProperty(ApplicationConstants.PropertyNames.PROPERTY_SHORT_URL)
 	private String shortenedURL;
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

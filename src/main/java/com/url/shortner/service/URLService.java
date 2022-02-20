@@ -9,4 +9,5 @@ public interface URLService {
 	
 	UrlEntity createShortenLink(URLEntityVO urlEntityVO) throws Exception;
 
+    UrlEntity createQuickShortLink(URLEntityVO urlEntityVO) throws URLValidationException;
 }

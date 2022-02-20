@@ -12,12 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.url.shortner.VO.URLEntityVO;
-import com.url.shortner.exception.URLValidationException;
 import com.url.shortner.model.UrlEntity;
-import com.url.shortner.model.UrlShortenedEntity;
 import com.url.shortner.service.URLService;
 
 @RestController
@@ -32,18 +29,27 @@ public class URLController {
 	@PostMapping("/urls/shorten")
 	public ResponseEntity<Object> createShortLink(@Valid @RequestBody URLEntityVO urlEntityVO, HttpServletRequest request) throws Exception {
 		logger.info("Controller Class :: Request Payload: " + urlEntityVO.toString());
-		
-		//To get the base url
-		String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
-	            .replacePath(null)
-	            .build()
-	            .toUriString();
+
+		String applicationURL = applicationUrl(request);
 		
 		logger.info("Controller Class :: calling createShortenLink service");
 		UrlEntity entity = urlService.createShortenLink(urlEntityVO);
-		entity.getUrlShortenedEntity().setShortenedURL(baseUrl + "/" + entity.getUrlShortenedEntity().getShortenedURL());
+		entity.getUrlShortenedEntity().setShortenedURL(applicationURL + "/" + entity.getUrlShortenedEntity().getShortenedURL());
 		
 		return new ResponseEntity<>(entity.getUrlShortenedEntity(), HttpStatus.CREATED);
+	}
+
+	@PostMapping("/urls/quickshorturl")
+	public ResponseEntity<Object> createQuickShortLink(@Valid @RequestBody URLEntityVO urlEntityVO, HttpServletRequest request) throws Exception {
+		String applicationURL = applicationUrl(request);
+		UrlEntity entity = urlService.createQuickShortLink(urlEntityVO);
+		entity.getUrlShortenedEntity().setShortenedURL(applicationURL + "/" + entity.getUrlShortenedEntity().getShortenedURL());
+		return new ResponseEntity<>(entity.getUrlShortenedEntity(), HttpStatus.CREATED);
+	}
+
+	private String applicationUrl(HttpServletRequest httpServletRequest) {
+		String protocol = httpServletRequest.getProtocol().toLowerCase().startsWith("http") ? "http://" : "https://";
+		return protocol + httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort() + httpServletRequest.getContextPath();
 	}
 
 }

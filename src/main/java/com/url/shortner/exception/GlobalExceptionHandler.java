@@ -49,4 +49,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		mv.setViewName("redirectError");
 		return mv;
 	}
+
+	@ExceptionHandler(value = {Exception.class})
+	public ResponseEntity<Object> applicationException(Exception ex, WebRequest request) {
+		Map<String, Object> body = new LinkedHashMap<String, Object>();
+		body.put("timestamp", Instant.now());
+		body.put("status", HttpStatus.INTERNAL_SERVER_ERROR);
+		body.put("message", "Internal Server Error. Please try again after sometime.");
+		return new ResponseEntity<Object>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 }
