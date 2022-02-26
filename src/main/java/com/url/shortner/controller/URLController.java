@@ -21,10 +21,10 @@ import com.url.shortner.service.URLService;
 @RequestMapping("/api/v1")
 public class URLController {
 	
-	public static Logger logger = LogManager.getLogger(URLController.class);
-	
 	@Autowired
 	private URLService urlService;
+
+	public static Logger logger = LogManager.getLogger(URLController.class);
 	
 	@PostMapping("/urls/shorten")
 	public ResponseEntity<Object> createShortLink(@Valid @RequestBody URLEntityVO urlEntityVO, HttpServletRequest request) throws Exception {

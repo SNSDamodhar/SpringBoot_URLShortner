@@ -17,33 +17,58 @@ import com.url.shortner.exception.URLValidationException;
 public class DateUtilities {
 	
 	private static final Logger logger = LogManager.getLogger(DateUtilities.class);
-	
-	public Date convertDateToUTCDate(Date date, String timeZone) throws URLValidationException {
-		
+
+	public Date toUTCDateFromDateInStringFormat(String inputDate, String timeZone) throws ParseException, URLValidationException {
+		Date date = convertStringToDateObject(inputDate);
+
 		if(timeZone.equalsIgnoreCase(ApplicationConstants.DEFAULT_TIMEZONE_VALUE)) {
 			ZoneId fromTimeZoneId = ZoneId.of("UTC");
 			ZonedDateTime fromZonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).withZoneSameLocal(fromTimeZoneId);
-			fromZonedDateTime = fromZonedDateTime.plusHours(23).plusMinutes(59).plusSeconds(59);
 			return Date.from(fromZonedDateTime.toInstant());
 		}
-		
+
+		Date UTCDate = convertDateFromCustomTimeZoneToUTCTimeZone(date, timeZone);
+		return UTCDate;
+	}
+
+	public Date convertDateFromCustomTimeZoneToUTCTimeZone(Date date, String timeZone) throws URLValidationException {
 		Date UTCDate = null;
 		if(ZoneId.getAvailableZoneIds().contains(timeZone)) {
 			ZoneId fromTimeZoneId = ZoneId.of(timeZone);
-	        ZoneId toTimeZoneId = ZoneId.of("UTC");
-	        
-	        ZonedDateTime fromZonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).withZoneSameLocal(fromTimeZoneId);
-	        ZonedDateTime toZonedDateTime = fromZonedDateTime.withZoneSameInstant(toTimeZoneId);
-	        
-	        toZonedDateTime = toZonedDateTime.plusHours(23 - toZonedDateTime.getHour()).plusMinutes(59 - toZonedDateTime.getMinute()).plusSeconds(59 - toZonedDateTime.getSecond());
-	        
-	        UTCDate = Date.from(toZonedDateTime.toInstant());
+			ZoneId toTimeZoneId = ZoneId.of(ApplicationConstants.DEFAULT_TIMEZONE_VALUE);
+
+			ZonedDateTime fromZonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).withZoneSameLocal(fromTimeZoneId);
+			ZonedDateTime toZonedDateTime = fromZonedDateTime.withZoneSameInstant(toTimeZoneId);
+			UTCDate = Date.from(toZonedDateTime.toInstant());
 		} else {
 			throw new URLValidationException("Invalid timezone specified: " + timeZone);
 		}
-		
-        return UTCDate;
+
+		return UTCDate;
 	}
+	
+//	public Date convertDateToUTCDate(Date date, String timeZone) throws URLValidationException {
+//
+//		if(timeZone.equalsIgnoreCase(ApplicationConstants.DEFAULT_TIMEZONE_VALUE)) {
+//			ZoneId fromTimeZoneId = ZoneId.of("UTC");
+//			ZonedDateTime fromZonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).withZoneSameLocal(fromTimeZoneId);
+//			return Date.from(fromZonedDateTime.toInstant());
+//		}
+//
+//		Date UTCDate = null;
+//		if(ZoneId.getAvailableZoneIds().contains(timeZone)) {
+//			ZoneId fromTimeZoneId = ZoneId.of(timeZone);
+//	        ZoneId toTimeZoneId = ZoneId.of(ApplicationConstants.DEFAULT_TIMEZONE_VALUE);
+//
+//	        ZonedDateTime fromZonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).withZoneSameLocal(fromTimeZoneId);
+//	        ZonedDateTime toZonedDateTime = fromZonedDateTime.withZoneSameInstant(toTimeZoneId);
+//	        UTCDate = Date.from(toZonedDateTime.toInstant());
+//		} else {
+//			throw new URLValidationException("Invalid timezone specified: " + timeZone);
+//		}
+//
+//        return UTCDate;
+//	}
 	
 	public Date getUTCTimeNow() {
 		Instant i = Instant.now();
@@ -51,7 +76,7 @@ public class DateUtilities {
 	}
 
 	public Date convertStringToDateObject(String date) throws ParseException {
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss a");
 		Date parsedDate = formatter.parse(date);
 		return parsedDate;
 	}

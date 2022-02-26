@@ -17,10 +17,11 @@ import com.url.shortner.service.URLShortenService;
 
 @Controller
 public class PublicController {
-	public static final Logger logger = LogManager.getLogger(PublicController.class);
 	
 	@Autowired
 	private URLShortenService urlShortenService;
+
+	private static final Logger logger = LogManager.getLogger(PublicController.class);
 
 	@GetMapping(value = "/{shortID}")
 	 public ResponseEntity<Void> redirect(@PathVariable("shortID") String shortID) throws URLRedirectionException {

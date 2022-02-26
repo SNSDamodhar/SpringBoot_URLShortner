@@ -22,8 +22,7 @@ import com.url.shortner.utility.BuildURLEntityFromVO;
 @Service
 @Transactional(readOnly = true)
 public class URLServiceImpl implements URLService {
-	public static final Logger logger = LogManager.getLogger(URLServiceImpl.class);
-	
+
 	@Autowired
 	private UrlShortenedRepository urlShortenedRepository;
 	
@@ -35,6 +34,8 @@ public class URLServiceImpl implements URLService {
 
 	@Value("${app.properties.shorturl.length}")
 	public int shortUrlLength;
+
+	private static final Logger logger = LogManager.getLogger(URLServiceImpl.class);
 
 	@Override
 	@Transactional
@@ -53,6 +54,7 @@ public class URLServiceImpl implements URLService {
 		if(isProceedToSave) {
 			try {
 				urlEntity = urlRepository.saveAndFlush(urlEntity);
+				urlEntity.setTimeZone(ApplicationConstants.DEFAULT_TIMEZONE_VALUE);
 			} catch(Exception e) {
 				logger.error("UrlEntity saving error ::", e);
 				throw new Exception(ApplicationConstants.INTERNAL_ERROR_MESSAGE);

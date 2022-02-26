@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,7 +22,7 @@ public class BuildURLEntityFromVO {
 	@Autowired
 	private DateUtilities dateConversionUtilities;
 
-	public final static Predicate<String> isRequestedShortUrlValid = (short_url) -> Pattern.matches("^[a-zA-Z0-9]*$", short_url); 
+	private Logger logger = LogManager.getLogger(BuildURLEntityFromVO.class);
 
 	public UrlEntity convert(URLEntityVO urlEntityVO, List<String> errors) {
 		//Validating User Input
@@ -38,8 +40,7 @@ public class BuildURLEntityFromVO {
 		
 		if(isValidUserInput && urlEntityVO.getShortURLExpiryDate() != null) {
 			try {
-				Date parsedDate = dateConversionUtilities.convertStringToDateObject(urlEntityVO.getShortURLExpiryDate());
-				urlEntity.setShortURLExpiryDate(dateConversionUtilities.convertDateToUTCDate(parsedDate, urlEntityVO.getTimeZone()));
+				urlEntity.setShortURLExpiryDate(dateConversionUtilities.toUTCDateFromDateInStringFormat(urlEntityVO.getShortURLExpiryDate(), urlEntityVO.getTimeZone()));
 			} catch (URLValidationException e) {
 				errors.add(e.getMessage());
 			} catch (ParseException e) {
@@ -116,7 +117,6 @@ public class BuildURLEntityFromVO {
 		}
 
 		boolean isExpiryDateValid = UserInputValidationFunctionalInterfaces.isUrlExpiryDateValid.test(expiryDate); //will get true, if we give past date
-		System.out.println(isValidSecondsProvided + " " +isExpiryDateProvided + " " + isExpiryDateValid);
 		if(!isValidSecondsProvided && !isExpiryDateProvided) {
 			errors.add(ApplicationConstants.URLConstants.INVALID_EXPIRY_DATA);
 			return false;

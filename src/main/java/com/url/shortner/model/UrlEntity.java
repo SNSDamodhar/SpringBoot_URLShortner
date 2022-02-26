@@ -55,6 +55,7 @@ public class UrlEntity extends Parent {
 	private Date shortURLExpiryDate;
 	
 	@Column(name = "time_zone")
+	@JsonInclude(value = Include.NON_NULL)
 	@JsonProperty(ApplicationConstants.PropertyNames.PROPERTY_TIME_ZONE)
 	private String timeZone = ApplicationConstants.DEFAULT_TIMEZONE_VALUE;
 	

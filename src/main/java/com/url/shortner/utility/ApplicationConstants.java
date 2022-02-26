@@ -26,7 +26,7 @@ public class ApplicationConstants {
 
         public static final String INVALID_EXPIRY_DATE = "Expiry Date should be future date";
 
-        public static final String INVALID_EXPIRY_DATE_FORMAT = "Invalid date format. Please specify date in dd-MM-yyyy";
+        public static final String INVALID_EXPIRY_DATE_FORMAT = "Invalid expiry date format. Please specify date in dd-MM-yyyy hh:mm:ss [AM/PM]";
 
         public static final int QUICK_SHORT_URL_VALIDITY_SECONDS = 600;
     }

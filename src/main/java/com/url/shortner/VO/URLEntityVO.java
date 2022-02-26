@@ -2,6 +2,7 @@ package com.url.shortner.VO;
 
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.url.shortner.utility.ApplicationConstants;
 
@@ -25,6 +26,7 @@ public class URLEntityVO {
 	private int shortURLExpirySeconds;
 
 	@JsonProperty(ApplicationConstants.PropertyNames.PROPERTY_EXPIRY_DATE)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss [AM/PM]")
 	private String shortURLExpiryDate;
 	
 	@JsonProperty(ApplicationConstants.PropertyNames.PROPERTY_TIME_ZONE)
